@@ -20,6 +20,7 @@ def get_jira(
     url: str = "http://localhost:2990",
     username: str = "admin",
     password: str = "admin",
+    personal_access_token=None,
     appid=None,
     autofix=False,
     verify: bool | str = True,
@@ -31,6 +32,7 @@ def get_jira(
         url (str): URL of the Jira server
         username (str): username to use for authentication
         password (str): password to use for authentication
+        personal_access_token: Personal access token for authentication
         appid: appid
         autofix: autofix
         verify (Union[bool, str]): True to indicate whether SSL certificates should be verified or
@@ -57,6 +59,7 @@ def get_jira(
         # only the `url` is mandatory
         user=...
         pass=...
+        personal_access_token=...
         appid=...
         verify=...
 
@@ -84,6 +87,7 @@ def get_jira(
         defaults={
             "user": None,
             "pass": None,
+            "personal_access_token": personal_access_token,
             "appid": appid,
             "autofix": autofix,
             "verify": verify,
@@ -109,6 +113,7 @@ def get_jira(
             url = config.get(profile, "url")
             username = config.get(profile, "user")
             password = config.get(profile, "pass")
+            personal_access_token = config.get(profile, "personal_access_token")
             appid = config.get(profile, "appid")
             autofix = config.get(profile, "autofix")
             try:
@@ -126,6 +131,9 @@ def get_jira(
     options["autofix"] = autofix
     options["appid"] = appid
     options["verify"] = verify
+
+    if personal_access_token:
+        return JIRA(options=options, token_auth=(personal_access_token))
 
     return JIRA(options=options, basic_auth=(username, password))
     # self.jira.config.debug = debug
